@@ -108,9 +108,10 @@
                         .domain([10, 500])
                         .range([10, 30]);
 
+                        //graavity - 0.15 charge -75
       var force = d3.layout.force()
-          .gravity(.15)
-          .charge(-75)
+          .gravity(.05)
+          .charge(-40)
           .size([width, height])
           .nodes(nodes);
 
@@ -205,37 +206,37 @@
                     return (d.radius);
                   });
 
-          nodeGroup.append("svg:image")
-            .attr("xlink:href", "https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg")
-            .attr("x", function(d) {
-              d.radius = rScale(d.numFriends);
-              if (d.numFriends > 1000) {
-                d.radius = (d.numFriends > 2000)? 50:40;
-              }
-              return (-d.radius);
-            })
-            .attr("y", function(d) {
-              d.radius = rScale(d.numFriends);
-              if (d.numFriends > 1000) {
-                d.radius = (d.numFriends > 2000)? 50:40;
-              }
-              return (-d.radius);
-            })
-            .attr("width", function(d) {
-              d.radius = rScale(d.numFriends);
-              if (d.numFriends > 1000) {
-                d.radius = (d.numFriends > 2000)? 50:40;
-              }
-              return (2*d.radius);
-            })
-            .attr("clip-path", "url(#clipCircle" + clipPathId + ")")
-            .attr("height", function(d) {
-              d.radius = rScale(d.numFriends);
-              if (d.numFriends > 1000) {
-                d.radius = (d.numFriends > 2000)? 50:40;
-              }
-              return (2*d.radius);
-            });
+          // nodeGroup.append("svg:image")
+          //   .attr("xlink:href", "https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg")
+          //   .attr("x", function(d) {
+          //     d.radius = rScale(d.numFriends);
+          //     if (d.numFriends > 1000) {
+          //       d.radius = (d.numFriends > 2000)? 50:40;
+          //     }
+          //     return (-d.radius);
+          //   })
+          //   .attr("y", function(d) {
+          //     d.radius = rScale(d.numFriends);
+          //     if (d.numFriends > 1000) {
+          //       d.radius = (d.numFriends > 2000)? 50:40;
+          //     }
+          //     return (-d.radius);
+          //   })
+          //   .attr("width", function(d) {
+          //     d.radius = rScale(d.numFriends);
+          //     if (d.numFriends > 1000) {
+          //       d.radius = (d.numFriends > 2000)? 50:40;
+          //     }
+          //     return (2*d.radius);
+          //   })
+          //   .attr("clip-path", "url(#clipCircle" + clipPathId + ")")
+          //   .attr("height", function(d) {
+          //     d.radius = rScale(d.numFriends);
+          //     if (d.numFriends > 1000) {
+          //       d.radius = (d.numFriends > 2000)? 50:40;
+          //     }
+          //     return (2*d.radius);
+          //   });
 
             // nodeGroup.append("image")
             //   .attr("xlink:href", "https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg")
