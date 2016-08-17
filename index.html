@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <body>
   <button type="button" id = "male"> Male </button>
+  <button type="button" id = "female"> Female </button>
   <style>
     .node:hover {
       cursor: pointer;
@@ -63,9 +64,13 @@
     var width = 960,  //960x720, 640x480, or 528x528
         height = 720;
 
+    var nodeGlobal;
     var dataset = [];
     var links = [];
     var linkedByIndex = {};
+    var male = true;
+    var female = true;
+
     d3.csv("./data/mock.csv", function(d) {
         var friendList = d.friendList.split("/");
         var sourceIndex = +d.id - 1;
@@ -110,7 +115,7 @@
 
       force.start();
 
-    
+
       var svg = d3.select("body").append("svg")
           .attr("width", width)
           .attr("height", height);
@@ -214,6 +219,8 @@
               return d.name;
             });
 
+        nodeGlobal = nodeGroup;
+
       function onNodeClick() {
         if (toggle == 0) {
           //-- Reduce the opacity of all but the neighbouring nodes
@@ -256,7 +263,10 @@
 
             selectedNode = null;
           }
+
         }
+
+
       }
 
       force.on("tick", function() {
@@ -267,6 +277,25 @@
         while (++i < n) q.visit(collide(nodes[i]));
 
         nodeGroup.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+      });
+
+      $("#female").click(function() {
+        d3.selectAll(".node").style("visibility", function(d) {
+            return d.sex == "m" && male ? "hidden" : "visible";
+          });
+          male = !male;
+      });
+
+      $("#male").click(function() {
+        d3.selectAll(".node").style("visibility", function(d) {
+            return d.sex == "f" && female ? "hidden" : "visible";
+          });
+          female = !female;
+        // d3.selectAll(".node").each(function (d) {
+        //   if(d.sex == "f") {
+        //
+        //   }
+        // });
       });
     }
 
@@ -301,5 +330,7 @@
     function neighboring(a, b) {
       return linkedByIndex[a.index + "," + b.index];
     }
+
+
   </script>
 </body>
