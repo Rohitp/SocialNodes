@@ -3,6 +3,9 @@
 <body>
   <button type="button" id = "male"> Male </button>
   <button type="button" id = "female"> Female </button>
+  <button type="button" id = "most"> Most Active </button>
+  <button type="button" id = "least"> Slipping Away </button>
+  <button type="button" id = "explore"> Explore </button>
   <style>
     .node:hover {
       cursor: pointer;
@@ -71,26 +74,33 @@
     var male = true;
     var female = true;
     var clipPathId = 0;
+    var most = true;
+    var least = true;
 
-    d3.csv("./data/mock.csv", function(d) {
-        var friendList = d.friendList.split("/");
+    $(document).on("click","button#explore",function(){
+      window.location.href = "http://alertcandy.com/demo/users/display.php";
+    });
+
+    d3.csv("./data/data.csv", function(d) {
+        // var friendList = d.friendList.split("/");
         var sourceIndex = +d.id - 1;
         linkedByIndex[sourceIndex + "," + sourceIndex] = 1; //-- linked to itself
-        if (+d.numMutualFriends > 0) {
+        /*if (+d.numMutualFriends > 0) {
           friendList.forEach(function(d, i){
             var targetIndex = friendList[i] - 1;
             links.push({"source": sourceIndex, "target": targetIndex});
             linkedByIndex[sourceIndex + "," + targetIndex] = 1;
           }); //forEach
-        }
+        }*/
         return {
-          firstName: d.firstName.split("/")[0],
-          lastName: d.lastName,
-          name: d.firstName.split("/")[0] + " " + d.lastName,
-          sex: d.sex,
-          numFriends: +d.numFriends,
-          numMutual: +d.numMutualFriends,
-          friendList: friendList,
+          /*firstName: d.firstName.split("/")[0],
+          lastName: d.lastName,*/
+          // name: d.firstName.split("/")[0] + " " + d.lastName,
+          name: d.fullName,
+          sex: d.gender,
+          sessions: +d.sessions,
+          // numMutual: +d.numMutualFriends,
+          // friendList: friendList,
           id: d.id
         };
       }, function(error, rows) {
@@ -127,7 +137,8 @@
           .attr('class', 'd3-tip')
           .offset([-10, 0])
           .html(function(d) {
-            return d.name + ", " + d.numMutual + " mutual friends</span>";
+            // return d.name + ", " + d.numMutual + " mutual friends</span>";
+            return d.name+"</span>";
           });
 
           svg.call(tip)
@@ -145,7 +156,7 @@
               d3.select(this).selectAll('text.num')
                 .style("fill", "black")
                 .text(function(d) {
-                  return d.numFriends;
+                  return d.sessions;
                 });
               tip.show(d);
             }
@@ -154,16 +165,16 @@
           .on('mouseout', function(d) {
             if (this != selectedNode && toggle == 0) {
               d3.select(this).selectAll('circle').style("fill", function(d, i) {
-                return (d.sex == "f") ? "white":"black"; });
+                return (d.sex == "female") ? "white":"black"; });
               d3.select(this).selectAll('text.num')
                 .style("fill", function(d, i) {
-                  return (d.sex == "f") ? "black":"white"; })
+                  return (d.sex == "female") ? "black":"white"; })
                 .text(function(d) {
-                  var num = d.numFriends;
-                  if (d.numFriends > 500) {
-                    if (d.numFriends > 2000) {
+                  var num = d.sessions;
+                  if (d.sessions > 500) {
+                    if (d.sessions > 2000) {
                       num = "2000+";
-                    } else if (d.numFriends > 1000) {
+                    } else if (d.sessions > 1000) {
                       num = "1000+";
                     } else {
                       num = "500+";
@@ -181,14 +192,14 @@
       //-- circle
       nodeGroup.append("circle")
           .attr("r", function(d) {
-            d.radius = rScale(d.numFriends);
-            if (d.numFriends > 1000) {
-              d.radius = (d.numFriends > 2000)? 50:40;
+            d.radius = rScale(d.sessions*10);
+            if (d.sessions*10 > 1000) {
+              d.radius = (d.sessions*10 > 2000)? 50:40;
             }
             return (d.radius);
           })
           .style("fill", function(d, i) {
-            return (d.sex == "f") ? "white":"black";
+            return (d.sex == "female") ? "white":"black";
           });
 
           clipPathId++;
@@ -199,74 +210,79 @@
               .attr("id", "clipCircle" + clipPathId)
                   .append("circle")
                   .attr("r", function(d) {
-                    d.radius = rScale(d.numFriends);
-                    if (d.numFriends > 1000) {
-                      d.radius = (d.numFriends > 2000)? 50:40;
+                    d.radius = rScale(d.sessions*10);
+                    if (d.sessions*10 > 1000) {
+                      d.radius = (d.sessions*10 > 2000)? 50:40;
                     }
                     return (d.radius);
                   });
 
-          // nodeGroup.append("svg:image")
-          //   .attr("xlink:href", "https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg")
-          //   .attr("x", function(d) {
-          //     d.radius = rScale(d.numFriends);
-          //     if (d.numFriends > 1000) {
-          //       d.radius = (d.numFriends > 2000)? 50:40;
-          //     }
-          //     return (-d.radius);
-          //   })
-          //   .attr("y", function(d) {
-          //     d.radius = rScale(d.numFriends);
-          //     if (d.numFriends > 1000) {
-          //       d.radius = (d.numFriends > 2000)? 50:40;
-          //     }
-          //     return (-d.radius);
-          //   })
-          //   .attr("width", function(d) {
-          //     d.radius = rScale(d.numFriends);
-          //     if (d.numFriends > 1000) {
-          //       d.radius = (d.numFriends > 2000)? 50:40;
-          //     }
-          //     return (2*d.radius);
-          //   })
-          //   .attr("clip-path", "url(#clipCircle" + clipPathId + ")")
-          //   .attr("height", function(d) {
-          //     d.radius = rScale(d.numFriends);
-          //     if (d.numFriends > 1000) {
-          //       d.radius = (d.numFriends > 2000)? 50:40;
-          //     }
-          //     return (2*d.radius);
-          //   });
+          console.log(nodeGroup);        
+          nodeGroup.append("svg:image")
+            .attr("xlink:href", function(d){
+              return ("http://alertcandy.com/demo/users/faces/"+d.id+".jpg")
+            })
+            .attr("x", function(d) {
+              d.radius = rScale(d.sessions*10);
+              if (d.sessions*10 > 1000) {
+                d.radius = (d.sessions*10 > 2000)? 50:40;
+              }
+              return (-d.radius);
+            })
+            .attr("y", function(d) {
+              d.radius = rScale(d.sessions*10);
+              if (d.sessions*10 > 1000) {
+                d.radius = (d.sessions*10 > 2000)? 50:40;
+              }
+              return (-d.radius);
+            })
+            .attr("width", function(d) {
+              d.radius = rScale(d.sessions*10);
+              if (d.sessions*10 > 1000) {
+                d.radius = (d.sessions*10 > 2000)? 50:40;
+              }
+              return (2*d.radius);
+            })
+            .attr("clip-path", "url(#clipCircle" + clipPathId + ")")
+            .attr("height", function(d) {
+              d.radius = rScale(d.sessions*10);
+              if (d.sessions*10 > 1000) {
+                d.radius = (d.sessions*10 > 2000)? 50:40;
+              }
+              return (2*d.radius);
+            });
 
-            // nodeGroup.append("image")
-            //   .attr("xlink:href", "https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg")
-            //   .attr("x", "-9")
-            //   .attr("y", "-8")
-            //   .attr("width", 16)
-            //   .attr("clip-path", "url(#clipCircle" + clipPathId + ")")
-            //   .attr("height", 16);
+            /*nodeGroup.append("image")
+              .attr("xlink:href", function(d){
+              return ("http://alertcandy.com/demo/users/faces/"+d.id+".jpg")
+            })
+              .attr("x", "-9")
+              .attr("y", "-8")
+              .attr("width", 16)
+              .attr("clip-path", "url(#clipCircle" + clipPathId + ")")
+              .attr("height", 16);*/
 
 
 
       //-- text
-      nodeGroup.append("text")
+      /*nodeGroup.append("text")
             .attr("dy", ".35em")
             .attr("text-anchor", "middle")
             .attr("class", "num")
-            .attr("fill", function(d, i) { return (d.sex == "f") ? "black":"white"; })
+            .attr("fill", function(d, i) { return (d.sex == "female") ? "black":"white"; })
             .text(function(d) {
-              var num = d.numFriends;
-              if (d.numFriends > 500) {
-                if (d.numFriends > 2000) {
+              var num = d.sessions;
+              if (d.sessions > 500) {
+                if (d.sessions > 2000) {
                   num = "2000+";
-                } else if (d.numFriends > 1000) {
+                } else if (d.sessions > 1000) {
                   num = "1000+";
                 } else {
                   num = "500+";
                 };
               }
               return num;
-            });
+            });*/
 
       nodeGroup.append("text")
             .attr("text-anchor", "middle")
@@ -284,14 +300,17 @@
         if (toggle == 0) {
           //-- Reduce the opacity of all but the neighbouring nodes
           d = d3.select(this).node().__data__;  //**********//
-          nodeGroup.style("opacity", function (o) {
+          /*nodeGroup.style("opacity", function (o) {
             return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
-          });
+          });*/
+          nodeGroup.style("opacity", function (o) {
+           return o.id == d.id ? 1 : 0.1;
+         });
           toggle = 1;
           selectedNode = this;
-          nodeGroup.selectAll("text.label").style("visibility", function (o) {
+          /*nodeGroup.selectAll("text.label").style("visibility", function (o) {
             return neighboring(d, o) | neighboring(o, d) ? "visible" : "hidden";
-          });
+          });*/
 
         } else {
           if (this == selectedNode) {
@@ -300,16 +319,16 @@
             toggle = 0;
             //--------------------//
             d3.select(selectedNode).selectAll('circle').style("fill", function(d, i) {
-              return (d.sex == "f") ? "white":"black"; });
+              return (d.sex == "female") ? "white":"black"; });
             d3.select(selectedNode).selectAll('text.num')
               .style("fill", function(d, i) {
-                return (d.sex == "f") ? "black":"white"; })
+                return (d.sex == "female") ? "black":"white"; })
               .text(function(d) {
-                var num = d.numFriends;
-                if (d.numFriends > 500) {
-                  if (d.numFriends > 2000) {
+                var num = d.sessions;
+                if (d.sessions > 500) {
+                  if (d.sessions > 2000) {
                     num = "2000+";
-                  } else if (d.numFriends > 1000) {
+                  } else if (d.sessions > 1000) {
                     num = "1000+";
                   } else {
                     num = "500+";
@@ -340,55 +359,70 @@
 
       $("#female").click(function() {
         d3.selectAll(".node").style("opacity", function(d) {
-            return d.sex == "m" && male ? "0" : "1";
+            return d.sex == "male" && male ? "0" : "1";
           });
           male = !male;
-          imageRe()
+          // imageRe()
       });
 
       $("#male").click(function() {
         d3.selectAll(".node").style("opacity", function(d) {
-            return d.sex == "f" && female ? "0" : "1";
+            return d.sex == "female" && female ? "0" : "1";
           });
           female = !female;
           // imageRe()
         // d3.selectAll(".node").each(function (d) {
-        //   if(d.sex == "f") {
+        //   if(d.sex == "female") {
         //
         //   }
         // });
       });
+
+      $("#most").click(function(){
+        d3.selectAll(".node").style("opacity",function(d){
+          return d.sessions < 40 && most ? "0" : "1";
+        });
+        most = !most;
+      });
+
+       $("#least").click(function(){
+        d3.selectAll(".node").style("opacity",function(d){
+          return d.sessions > 40 && least ? "0" : "1";
+        });
+        least = !least;
+      });
+
 
       function imageRe() {
         console.log("Appening");
         d3.selectAll("node").append("svg:image")
           .attr("xlink:href", "https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg")
           .attr("x", function(d) {
-            d.radius = rScale(d.numFriends);
-            if (d.numFriends > 1000) {
-              d.radius = (d.numFriends > 2000)? 50:40;
+            d.radius = rScale(d.sessions);
+            if (d.sessions > 1000) {
+              d.radius = (d.sessions > 2000)? 50:40;
             }
             return (-d.radius);
           })
           .attr("y", function(d) {
-            d.radius = rScale(d.numFriends);
-            if (d.numFriends > 1000) {
-              d.radius = (d.numFriends > 2000)? 50:40;
+            d.radius = rScale(d.sessions);
+            if (d.sessions > 1000) {
+              d.radius = (d.sessions > 2000)? 50:40;
             }
             return (-d.radius);
           })
           .attr("width", function(d) {
-            d.radius = rScale(d.numFriends);
-            if (d.numFriends > 1000) {
-              d.radius = (d.numFriends > 2000)? 50:40;
+            d.radius = rScale(d.sessions);
+            if (d.sessions > 1000) {
+              d.radius = (d.sessions > 2000)? 50:40;
             }
             return (2*d.radius);
           })
           .attr("clip-path", "url(#clipCircle" + clipPathId + ")")
           .attr("height", function(d) {
-            d.radius = rScale(d.numFriends);
-            if (d.numFriends > 1000) {
-              d.radius = (d.numFriends > 2000)? 50:40;
+            d.radius = rScale(d.sessions);
+            if (d.sessions > 1000) {
+              d.radius = (d.sessions > 2000)? 50:40;
             }
             return (2*d.radius);
           });
