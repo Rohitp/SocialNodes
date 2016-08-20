@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <body>
+<div style="float:left;margin:1%;">
   <button type="button" id = "male"> Male </button>
   <button type="button" id = "female"> Female </button>
   <button type="button" id = "most"> Most Active </button>
   <button type="button" id = "least"> Slipping Away </button>
   <button type="button" id = "explore"> Explore </button>
+</div>
+  <div id="slider"></div>
   <style>
+  #slider{
+    float: left;
+    width: 30%;
+    margin: 1%;
+  }
     .node:hover {
       cursor: pointer;
     }
@@ -59,6 +67,7 @@
 
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script> -->
   <!-- <script type='text/javascript' src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"> </script> -->
+  <link rel="stylesheet" type="text/css" href="jquery-ui.min.css">
   <script src="./lib/jquery-1.10.2.min.js"></script>
   <script src="./lib/jquery-ui-1.11.1.min.js"></script>
   <script src="./lib/d3.min.js"></script>
@@ -392,6 +401,22 @@
         least = !least;
       });
 
+       $("#slider").slider({
+        range:true,
+        min:0,
+        max:1000,
+        values:[45,200],
+        slide: function(){
+          d3.selectAll(".node").style("opacity",function(d){
+            if( $("#slider").slider("values",0)<d.sessions*10 &&  $("#slider").slider("values",1) >d.sessions*10){
+              return "1";
+            }
+            else{
+              return "0";
+            }
+          });
+        }
+       });
 
       function imageRe() {
         console.log("Appening");
